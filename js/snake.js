@@ -264,7 +264,6 @@ Snake.prototype.setupCanvas = function () {
     this.canvas.style.height = width*0.9 + "px";
     this.canvas.style.position = "fixed";
     this.canvas.style.top = width*0.05 + "px";
-    this.canvas.style.left = width*0.05 + "px";
     this.ctx.fillStyle = "black";
     this.ctx.strokeStyle = "white";
 

@@ -9,6 +9,12 @@ canvas{
     border: 1px solid lightgray;
 }
 
+.theGame{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .theScore{
     position: fixed;
     bottom: 0;
