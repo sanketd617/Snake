@@ -1,6 +1,7 @@
 
-function Snake(canvas, scale, n) {
+function Snake(canvas, scoreDiv, scale, n, letters) {
     this.canvas = canvas;
+    this.letters = letters;
     this.ctx = canvas.getContext('2d');
     this.scale = scale;
     this.n = n;
@@ -16,12 +17,94 @@ function Snake(canvas, scale, n) {
     this.minSteps = 0;
     this.paused = false;
     this.score = 0;
-    this.loop(100, 200);
+    this.scoreDiv = scoreDiv;
+    this.isStarted = false;
+    this.isFlashing = true;
+    this.displayScore();
+    //this.loop(100, 200);
+
+    this.flash("tap to start");
 }
+
+Snake.prototype.flash = function(text){
+    var count = 0;
+    var maxCount = 100;
+    var flag = false;
+    var self = this;
+    _flash();
+
+    function _flash() {
+        if(!self.isFlashing)
+            return;
+        if(flag){
+            self.drawText(text, "white", "black");
+        }
+        else{
+            self.drawText(text, "black", "white");
+        }
+
+        flag = !flag;
+        count++;
+
+        if(count<maxCount)
+            setTimeout(_flash, 300);
+    }
+};
+
+Snake.prototype.drawText = function(text, foreground, background){
+    var words = text.split(' ');
+    this.clear(background);
+    var self = this;
+    var startY = parseInt((self.n - (words.length*6 -1))/2);
+
+    words.forEach(function (word) {
+        var wordLen = word.length;
+        var startX = parseInt((self.n - (6*wordLen - 1))/2);
+        console.log(startX)
+        for(var i=0; i<wordLen; i++){
+            var letter = letters[word[i]];
+            for(var x=0; x<5; x++){
+                for(var y=0; y<5; y++){
+                    if(letter[x][y]) {
+                        self.drawTile(startX+y, startY+x, foreground ? foreground : "white");
+                    }
+                }
+            }
+            startX += 6;
+        }
+
+        startY += 6;
+    });
+};
+
+Snake.prototype.start = function(){
+    if(!this.isStarted){
+        this.isStarted = true;
+        this.loop(100, 200);
+    }
+};
+
+Snake.prototype.displayScore = function(){
+    this.scoreDiv.innerHTML = this.score;
+};
 
 Snake.prototype.loop = function(minDelay, maxDelay){
     var self = this;
-    _loop();
+    if(self.isDead)
+        return;
+    if(self.isStarted){
+        self.isFlashing = false;
+        _loop();
+    }
+    else if(self.isDead) {
+        self.isFlashing = true;
+        self.isStarted = false;
+        self.flash("game over");
+    }
+    else{
+        self.isFlashing = true;
+        self.flash("tap to start");
+    }
 
     function _loop() {
         self.draw();
@@ -32,8 +115,17 @@ Snake.prototype.loop = function(minDelay, maxDelay){
             delay = maxDelay - self.foodConsumed;
         else
             delay = minDelay;
-        if(!self.isDead && !self.paused)
+        if(!self.isDead && !self.paused && self.isStarted)
             setTimeout(_loop, delay);
+        else if(self.isDead) {
+            self.isFlashing = true;
+            self.isStarted = false;
+            self.flash("game over");
+        }
+        else{
+            self.isFlashing = true;
+            self.flash("tap to start");
+        }
     }
 };
 
@@ -167,19 +259,21 @@ Snake.prototype.calcMinPath = function(){
 Snake.prototype.setupCanvas = function () {
     this.canvas.width = this.canvas.width*this.scale;
     this.canvas.height = this.canvas.width;
-    this.canvas.style.width = window.innerWidth*0.9 + "px";
-    this.canvas.style.height = window.innerWidth*0.9 + "px";
+    var width = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
+    this.canvas.style.width = width*0.9 + "px";
+    this.canvas.style.height = width*0.9 + "px";
     this.canvas.style.position = "fixed";
-    this.canvas.style.top = window.innerWidth*0.05 + "px";
-    this.canvas.style.left = window.innerWidth*0.05 + "px";
+    this.canvas.style.top = width*0.05 + "px";
+    this.canvas.style.left = width*0.05 + "px";
     this.ctx.fillStyle = "black";
     this.ctx.strokeStyle = "white";
 
 };
 
-Snake.prototype.clear = function () {
+Snake.prototype.clear = function (color) {
     var ctx = this.ctx;
     ctx.save();
+    ctx.fillStyle = color ? color : "black";
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     ctx.restore();
 };
@@ -240,6 +334,7 @@ Snake.prototype.eat = function(){
             this.coords.push({ x: this.coords[this.coords.length-1].x - 1, y: this.coords[this.coords.length-1].y });
 
     this.calcMinPath();
+    this.displayScore();
 };
 
 Snake.prototype.drawTile = function (x, y, color) {

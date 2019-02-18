@@ -8,3 +8,14 @@
 canvas{
     border: 1px solid lightgray;
 }
+
+.theScore{
+    position: fixed;
+    bottom: 0;
+    text-align: center;
+    width: 100%;
+    padding: 1rem;
+    font-family: Aerial, sans-serif;
+    font-weight: bolder;
+    font-size: 3rem;
+}
