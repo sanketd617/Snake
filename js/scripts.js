@@ -2,7 +2,7 @@
 function init() {
     var canvas = document.querySelector(".theGame .theCanvas");
     var scoreDiv = document.querySelector(".theScore");
-    var snake = new Snake(canvas, scoreDiv,  2, 33, letters);
+    var snake = new Snake(canvas, scoreDiv,  2, 30, letters);
 
     window.onclick = function (ev) {
         if(!snake.isStarted && !snake.isDead)
@@ -32,7 +32,7 @@ function init() {
         }
     }
 
-    var myElement = document.querySelector(".theCanvas");
+    var myElement = document.querySelector("body");
 
     var mc = new Hammer(myElement);
 

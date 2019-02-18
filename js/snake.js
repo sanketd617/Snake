@@ -21,7 +21,8 @@ function Snake(canvas, scoreDiv, scale, n, letters) {
     this.isStarted = false;
     this.isFlashing = true;
     this.displayScore();
-    //this.loop(100, 200);
+    //this.loop(100, 150);
+    //this.loop(100, 150);
 
     this.flash("tap to start");
 }
@@ -80,7 +81,8 @@ Snake.prototype.drawText = function(text, foreground, background){
 Snake.prototype.start = function(){
     if(!this.isStarted){
         this.isStarted = true;
-        this.loop(100, 200);
+        this.loop(100, 150);
+        this.loop(100, 150);
     }
 };
 
@@ -151,8 +153,17 @@ Snake.prototype.move = function(){
     if(this.food.x === this.coords[0].x && this.food.y === this.coords[0].y)
         this.eat();
 
-    if(self.coords[0].x < 0 || self.coords[0].y < 0 || self.coords[0].x >= this.n || self.coords[0].y >= this.n)
-        self.isDead = true;
+    if(self.coords[0].x < 0)
+        self.coords[0].x = self.n-1;
+
+    if(self.coords[0].y < 0)
+        self.coords[0].y = self.n-1;
+
+    if(self.coords[0].x >= this.n)
+        self.coords[0].x = 0;
+
+    if(self.coords[0].y >= this.n)
+        self.coords[0].y = 0;
 
     for(var i=1; i<self.coords.length; i++){
         if(self.coords[i].x === self.coords[0].x && self.coords[i].y === self.coords[0].y){
@@ -260,10 +271,10 @@ Snake.prototype.setupCanvas = function () {
     this.canvas.width = this.canvas.width*this.scale;
     this.canvas.height = this.canvas.width;
     var width = window.innerWidth < window.innerHeight ? window.innerWidth : window.innerHeight;
-    this.canvas.style.width = width*0.9 + "px";
-    this.canvas.style.height = width*0.9 + "px";
+    this.canvas.style.width = width + "px";
+    this.canvas.style.height = width + "px";
     this.canvas.style.position = "fixed";
-    this.canvas.style.top = width*0.05 + "px";
+    this.canvas.style.top = 0 + "px";
     this.ctx.fillStyle = "black";
     this.ctx.strokeStyle = "white";
 
